@@ -15,7 +15,6 @@
     .check-word { padding: 10px; border: 2px solid #ccc; background: #eee; cursor: pointer; border-radius: 5px; }
     .check-word.selected { background: #90ee90; font-weight: bold; }
     #winners { margin-top: 20px; font-size: 1.2em; color: #444; }
-    .icon { font-size: 2em; }
   </style>
 </head>
 <body>
@@ -24,9 +23,7 @@
   <div id="called-word"></div>
   <div id="controls">
     <button onclick="startGame()">Start</button>
-    <button onclick="pauseGame()">⏸️ Pause</button>
-    <button onclick="resumeGame()">▶️ Resume</button>
-    <button onclick="stopGame()">⏹️ Stop</button>
+    <button onclick="showNextWord()">Next Word</button>
     <button onclick="restartGame()">🔄 Restart</button>
     <button onclick="checkLine()" id="line-btn">✅ Line</button>
     <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
@@ -43,7 +40,6 @@
       "Hostel", "Bus", "Cruise", "Visa", "Terminal"
     ];
 
-    let intervalId = null;
     let currentIndex = 0;
     let shuffled = [];
     let called = [];
@@ -58,7 +54,7 @@
       return [...array].sort(() => Math.random() - 0.5);
     }
 
-   /* function createBoard() {
+    function createBoard() {
       board.innerHTML = "";
       boardWords = shuffle(words).slice(0, 25);
       boardWords.forEach(word => {
@@ -70,8 +66,8 @@
         };
         board.appendChild(div);
       });
-    }*/
-    
+    }
+
     function startGame() {
       shuffled = shuffle(boardWords);
       currentIndex = 0;
@@ -80,8 +76,7 @@
       document.getElementById("bingo-btn").disabled = false;
       winners.innerHTML = "";
       createBoard();
-      clearInterval(intervalId);
-      intervalId = setInterval(showNextWord, 5000);
+      showNextWord();
     }
 
     function showNextWord() {
@@ -90,28 +85,11 @@
         called.push(word);
         calledWord.textContent = word;
       } else {
-        clearInterval(intervalId);
+        calledWord.innerHTML = "⏹️ Game over";
       }
     }
 
-    function pauseGame() {
-      clearInterval(intervalId);
-      calledWord.innerHTML = "⏸️ Paused";
-    }
-
-    function resumeGame() {
-      calledWord.textContent = word;
-      intervalId = setInterval(showNextWord, 5000);
-      
-    }
-
-    function stopGame() {
-      clearInterval(intervalId);
-      calledWord.innerHTML = "⏹️ Stopped";
-    }
-
     function restartGame() {
-      stopGame();
       startGame();
     }
 
@@ -174,16 +152,16 @@
     function checkBingo() {
       displayCalledWords(selected => {
         const cells = [...document.querySelectorAll(".cell")];
-        const allMatch = cells.every(cell => selected.includes(cell.textContent));
+        const matched = selected.filter(word => boardWords.includes(word));
 
-        if (allMatch || selected.length === 10) {
+        if (matched.length === 10) {
           const name = prompt("¡BINGO correcto! ¿Quién lo ha completado?");
           winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
-          stopGame();
           document.getElementById("bingo-btn").disabled = true;
           document.getElementById("line-btn").disabled = true;
+          calledWord.innerHTML = "🎉 ¡Juego terminado!";
         } else {
-          alert("No todas las palabras del bingo están en la lista seleccionada.");
+          alert("Debes seleccionar 10 palabras del tablero que hayan sido llamadas.");
         }
       }, 10, "el bingo");
     }
