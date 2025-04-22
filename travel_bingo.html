@@ -58,7 +58,7 @@
       return [...array].sort(() => Math.random() - 0.5);
     }
 
-    function createBoard() {
+   /* function createBoard() {
       board.innerHTML = "";
       boardWords = shuffle(words).slice(0, 25);
       boardWords.forEach(word => {
@@ -70,8 +70,8 @@
         };
         board.appendChild(div);
       });
-    }
-
+    }*/
+    
     function startGame() {
       shuffled = shuffle(boardWords);
       currentIndex = 0;
@@ -81,7 +81,7 @@
       winners.innerHTML = "";
       createBoard();
       clearInterval(intervalId);
-      intervalId = setInterval(showNextWord, 10000);
+      intervalId = setInterval(showNextWord, 5000);
     }
 
     function showNextWord() {
@@ -90,7 +90,6 @@
         called.push(word);
         calledWord.textContent = word;
       } else {
-        calledWord.innerHTML = "⏹️ Game over";
         clearInterval(intervalId);
       }
     }
@@ -101,7 +100,9 @@
     }
 
     function resumeGame() {
-      intervalId = setInterval(showNextWord, 10000);
+      calledWord.textContent = word;
+      intervalId = setInterval(showNextWord, 5000);
+      
     }
 
     function stopGame() {
