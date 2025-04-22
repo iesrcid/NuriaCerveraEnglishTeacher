@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Travel Bingo</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; background: #f0f8ff; }
+    h1 { margin-top: 20px; }
+    #bingo-board { display: grid; grid-template-columns: repeat(5, 80px); justify-content: center; gap: 5px; margin: 20px auto; }
+    .cell { padding: 10px; background: white; border: 2px solid #ccc; cursor: pointer; }
+    .marked { background: #90ee90; font-weight: bold; }
+    #controls button { margin: 5px; padding: 10px 15px; }
+    #called-word { font-size: 1.5em; margin: 15px; color: #333; }
+  </style>
+</head>
+<body>
+  <h1>🎲 Travel Bingo 🎒</h1>
+  <div id="bingo-board"></div>
+  <div id="called-word"></div>
+  <div id="controls">
+    <button onclick="startGame()">Start</button>
+    <button onclick="pauseGame()">Pause</button>
+    <button onclick="resumeGame()">Resume</button>
+    <button onclick="stopGame()">Stop</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+  <script>
+    const words = [
+      "Airport", "Ticket", "Suitcase", "Hotel", "Map",
+      "Passport", "Flight", "Luggage", "Travel", "Guide",
+      "Tour", "Plane", "Journey", "Train", "Reservation",
+      "Tourist", "Customs", "Taxi", "Backpack", "Trip",
+      "Hostel", "Bus", "Cruise", "Visa", "Terminal"
+    ];
+
+    let intervalId = null;
+    let currentIndex = 0;
+    let shuffled = [];
+    const board = document.getElementById("bingo-board");
+    const calledWord = document.getElementById("called-word");
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function createBoard() {
+      board.innerHTML = "";
+      const selected = shuffle(words).slice(0, 25);
+      selected.forEach(word => {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.textContent = word;
+        div.onclick = () => {
+          div.classList.toggle("marked");
+          checkWin();
+        };
+        board.appendChild(div);
+      });
+    }
+
+    function startGame() {
+      shuffled = shuffle(words);
+      currentIndex = 0;
+      createBoard();
+      clearInterval(intervalId);
+      intervalId = setInterval(showNextWord, 3000);
+    }
+
+    function showNextWord() {
+      if (currentIndex < shuffled.length) {
+        calledWord.textContent = shuffled[currentIndex++];
+      } else {
+        calledWord.textContent = "Game over";
+        clearInterval(intervalId);
+      }
+    }
+
+    function pauseGame() {
+      clearInterval(intervalId);
+    }
+
+    function resumeGame() {
+      intervalId = setInterval(showNextWord, 3000);
+    }
+
+    function stopGame() {
+      clearInterval(intervalId);
+      calledWord.textContent = "Stopped";
+    }
+
+    function restartGame() {
+      stopGame();
+      startGame();
+    }
+
+    function checkWin() {
+      const cells = [...document.querySelectorAll(".cell")];
+      const grid = Array.from({length: 5}, (_, r) => cells.slice(r*5, r*5+5));
+
+      const isLine = arr => arr.every(cell => cell.classList.contains("marked"));
+
+      for (let i = 0; i < 5; i++) {
+        if (isLine(grid[i]) || isLine(grid.map(row => row[i]))) {
+          alert("¡Línea completada!");
+          return;
+        }
+      }
+
+      if (isLine(grid.map((r, i) => r[i])) || isLine(grid.map((r, i) => r[4-i]))) {
+        alert("¡Línea diagonal completada!");
+        return;
+      }
+
+      if (cells.every(cell => cell.classList.contains("marked"))) {
+        alert("¡BINGO! 🎉");
+      }
+    }
+  </script>
+</body>
+</html>
