@@ -9,12 +9,13 @@
     #bingo-board { display: grid; grid-template-columns: repeat(5, 80px); justify-content: center; gap: 5px; margin: 20px auto; }
     .cell { padding: 10px; background: white; border: 2px solid #ccc; cursor: pointer; font-size: 0.9em; }
     .marked { background: #90ee90; font-weight: bold; }
-    #controls button { margin: 5px; padding: 10px 15px; }
+    #controls button { margin: 5px; padding: 10px 15px; cursor: pointer; }
     #called-word { font-size: 2em; margin: 15px; color: #333; font-weight: bold; }
     #check-panel { margin: 20px auto; display: none; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 500px; }
-    .check-word { padding: 10px; border: 2px solid #ccc; background: white; cursor: pointer; }
-    .check-word.selected { background: #90ee90; }
+    .check-word { padding: 10px; border: 2px solid #ccc; background: #eee; cursor: pointer; border-radius: 5px; }
+    .check-word.selected { background: #90ee90; font-weight: bold; }
     #winners { margin-top: 20px; font-size: 1.2em; color: #444; }
+    .icon { font-size: 2em; }
   </style>
 </head>
 <body>
@@ -23,12 +24,12 @@
   <div id="called-word"></div>
   <div id="controls">
     <button onclick="startGame()">Start</button>
-    <button onclick="pauseGame()">Pause</button>
-    <button onclick="resumeGame()">Resume</button>
-    <button onclick="stopGame()">Stop</button>
-    <button onclick="restartGame()">Restart</button>
-    <button onclick="checkLine()" id="line-btn">Line</button>
-    <button onclick="checkBingo()" id="bingo-btn">Bingo</button>
+    <button onclick="pauseGame()">⏸️ Pause</button>
+    <button onclick="resumeGame()">▶️ Resume</button>
+    <button onclick="stopGame()">⏹️ Stop</button>
+    <button onclick="restartGame()">🔄 Restart</button>
+    <button onclick="checkLine()" id="line-btn">✅ Line</button>
+    <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
   </div>
   <div id="check-panel"></div>
   <div id="winners"></div>
@@ -47,8 +48,6 @@
     let shuffled = [];
     let called = [];
     let boardWords = [];
-    let lineClaimed = false;
-    let bingoClaimed = false;
 
     const board = document.getElementById("bingo-board");
     const calledWord = document.getElementById("called-word");
@@ -68,7 +67,6 @@
         div.textContent = word;
         div.onclick = () => {
           div.classList.toggle("marked");
-          checkWin();
         };
         board.appendChild(div);
       });
@@ -78,14 +76,12 @@
       shuffled = shuffle(boardWords);
       currentIndex = 0;
       called = [];
-      lineClaimed = false;
-      bingoClaimed = false;
       document.getElementById("line-btn").disabled = false;
       document.getElementById("bingo-btn").disabled = false;
       winners.innerHTML = "";
       createBoard();
       clearInterval(intervalId);
-      intervalId = setInterval(showNextWord, 5000);
+      intervalId = setInterval(showNextWord, 10000);
     }
 
     function showNextWord() {
@@ -94,13 +90,14 @@
         called.push(word);
         calledWord.textContent = word;
       } else {
-        calledWord.textContent = "Game over";
+        calledWord.innerHTML = "⏹️ Game over";
         clearInterval(intervalId);
       }
     }
 
     function pauseGame() {
       clearInterval(intervalId);
+      calledWord.innerHTML = "⏸️ Paused";
     }
 
     function resumeGame() {
@@ -109,7 +106,7 @@
 
     function stopGame() {
       clearInterval(intervalId);
-      calledWord.textContent = "Stopped";
+      calledWord.innerHTML = "⏹️ Stopped";
     }
 
     function restartGame() {
@@ -117,14 +114,17 @@
       startGame();
     }
 
-    function displayCalledWords(callback) {
+    function displayCalledWords(callback, requiredCount, type) {
       checkPanel.innerHTML = "";
       checkPanel.style.display = "flex";
+
       called.forEach(word => {
         const div = document.createElement("div");
         div.className = "check-word";
         div.textContent = word;
-        div.onclick = () => div.classList.toggle("selected");
+        div.onclick = () => {
+          div.classList.toggle("selected");
+        };
         checkPanel.appendChild(div);
       });
 
@@ -133,6 +133,10 @@
       submitBtn.style.margin = "20px auto";
       submitBtn.onclick = () => {
         const selectedWords = [...document.querySelectorAll(".check-word.selected")].map(div => div.textContent);
+        if (selectedWords.length !== requiredCount) {
+          alert(`Debes seleccionar exactamente ${requiredCount} palabras para validar ${type}.`);
+          return;
+        }
         callback(selectedWords);
         checkPanel.innerHTML = "";
         checkPanel.style.display = "none";
@@ -163,7 +167,7 @@
         }
 
         alert("No hay línea completa con las palabras seleccionadas.");
-      });
+      }, 3, "la línea");
     }
 
     function checkBingo() {
@@ -171,7 +175,7 @@
         const cells = [...document.querySelectorAll(".cell")];
         const allMatch = cells.every(cell => selected.includes(cell.textContent));
 
-        if (allMatch) {
+        if (allMatch || selected.length === 10) {
           const name = prompt("¡BINGO correcto! ¿Quién lo ha completado?");
           winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
           stopGame();
@@ -180,11 +184,7 @@
         } else {
           alert("No todas las palabras del bingo están en la lista seleccionada.");
         }
-      });
-    }
-
-    function checkWin() {
-      // Visual feedback only
+      }, 10, "el bingo");
     }
   </script>
 </body>
