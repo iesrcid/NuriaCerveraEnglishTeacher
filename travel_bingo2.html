@@ -19,11 +19,12 @@
   <h1>🎲 Travel Bingo 🎒</h1>
   <div id="called-word"></div>
   <div id="controls">
-    <button onclick="startGame()">Start</button>
-    <button onclick="showNextWord()">Next Word</button>
+    <button onclick="startGame()">🚀 Start</button>
+    <button onclick="showNextWord()">➡️ Next Word</button>
     <button onclick="restartGame()">🔄 Restart</button>
     <button onclick="checkLine()" id="line-btn">✅ Line</button>
     <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
+    <button onclick="showInstructions()">ℹ️ How to play</button>
   </div>
   <div id="check-panel"></div>
   <div id="winners"></div>
@@ -92,15 +93,15 @@
       });
 
       const submitBtn = document.createElement("button");
-      submitBtn.textContent = "Confirmar";
+      submitBtn.textContent = "Confirm";
       submitBtn.style.margin = "20px auto";
       submitBtn.onclick = () => {
         const selectedWords = [...document.querySelectorAll(".check-word.selected")].map(div => div.textContent);
         if (selectedWords.length !== requiredCount) {
-          alert(`Debes seleccionar exactamente ${requiredCount} palabras para validar ${type}.`);
+          alert(`You must select exactly ${requiredCount} words to validate the ${type}.`);
           return;
         }
-        const name = prompt(`¿Quién ha conseguido ${type}?`);
+        const name = prompt(`Who got the ${type}?`);
         if (name) callback(name);
         checkPanel.innerHTML = "";
         checkPanel.style.display = "none";
@@ -110,9 +111,9 @@
 
     function checkLine() {
       displayCalledWords(name => {
-        winners.innerHTML += `<div><strong>Línea:</strong> ${name}</div>`;
+        winners.innerHTML += `<div><strong>Line:</strong> ${name}</div>`;
         document.getElementById("line-btn").disabled = true;
-      }, 3, "la línea");
+      }, 3, "line");
     }
 
     function checkBingo() {
@@ -120,8 +121,12 @@
         winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
         document.getElementById("bingo-btn").disabled = true;
         document.getElementById("line-btn").disabled = true;
-        calledWord.innerHTML = "🎉 ¡Juego terminado!";
-      }, 10, "el BINGO");
+        calledWord.innerHTML = "🎉 Game Over!";
+      }, 10, "bingo");
+    }
+
+    function showInstructions() {
+      alert("🎯 How to Play:\n\n1. Click START to begin the bingo.\n2. Each time you click 'Next Word', a new word will appear.\n3. Students mark the words on their physical bingo cards.\n4. When someone completes a line (3 words), click 'Line'.\n5. For a full bingo (10 words), click 'Bingo'.\n6. Words will be checked before confirming the winner.\n\nHave fun playing Travel Bingo! ✈️");
     }
   </script>
 </body>
