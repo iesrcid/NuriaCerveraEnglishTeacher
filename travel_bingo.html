@@ -3,25 +3,90 @@
 <head>
   <meta charset="UTF-8">
   <title>Travel Bingo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; text-align: center; background: #f0f8ff; }
-    h1 { margin-top: 20px; }
-    #bingo-board { display: none; }
-    #called-word { font-size: 2em; margin: 15px; color: #333; font-weight: bold; }
-    #controls button { margin: 5px; padding: 10px 15px; cursor: pointer; }
-    #winners { margin-top: 20px; font-size: 1.2em; color: #444; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      text-align: center;
+      background: #fef6e4;
+      color: #333;
+      margin: 0;
+      padding: 0 20px;
+    }
+    h1 {
+      margin: 20px 0;
+      font-size: 2.5em;
+      color: #333;
+    }
+    #called-word {
+      font-size: 2.5em;
+      margin: 30px auto;
+      color: #222;
+      font-weight: 600;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    #controls button {
+      margin: 8px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      background-color: #58cced;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+    #controls button:hover {
+      background-color: #45b3d8;
+    }
+    #check-panel {
+      margin: 20px auto;
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      max-width: 600px;
+    }
+    .check-word {
+      padding: 12px;
+      border: 2px solid #ccc;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+    .check-word.selected {
+      background: #c8f7c5;
+      font-weight: bold;
+      border-color: #3aa655;
+    }
+    #winners {
+      margin-top: 25px;
+      font-size: 1.2em;
+      color: #444;
+    }
   </style>
 </head>
 <body>
   <h1>🎲 Travel Bingo 🎒</h1>
   <div id="called-word"></div>
   <div id="controls">
-    <button onclick="startGame()">Start</button>
-    <button onclick="showNextWord()">Next Word</button>
+    <button onclick="startGame()">🚀 Start</button>
+    <button onclick="showNextWord()">➡️ Next Word</button>
     <button onclick="restartGame()">🔄 Restart</button>
     <button onclick="checkLine()" id="line-btn">✅ Line</button>
     <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
+    <button onclick="showInstructions()">ℹ️ How to play</button>
   </div>
+  <div id="check-panel"></div>
   <div id="winners"></div>
 
   <script>
@@ -40,6 +105,7 @@
 
     const calledWord = document.getElementById("called-word");
     const winners = document.getElementById("winners");
+    const checkPanel = document.getElementById("check-panel");
 
     function shuffle(array) {
       return [...array].sort(() => Math.random() - 0.5);
@@ -53,6 +119,8 @@
       document.getElementById("line-btn").disabled = false;
       document.getElementById("bingo-btn").disabled = false;
       winners.innerHTML = "";
+      checkPanel.innerHTML = "";
+      checkPanel.style.display = "none";
       showNextWord();
     }
 
@@ -70,22 +138,57 @@
       startGame();
     }
 
+    function displayCalledWords(callback, requiredCount, type) {
+      checkPanel.innerHTML = "";
+      checkPanel.style.display = "flex";
+
+      called.forEach(word => {
+        const div = document.createElement("div");
+        div.className = "check-word";
+        div.textContent = word;
+        div.onclick = () => {
+          div.classList.toggle("selected");
+        };
+        checkPanel.appendChild(div);
+      });
+
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "Confirm";
+      submitBtn.style.margin = "20px auto";
+      submitBtn.style.background = '#ff8fab';
+      submitBtn.style.color = 'white';
+      submitBtn.onclick = () => {
+        const selectedWords = [...document.querySelectorAll(".check-word.selected")].map(div => div.textContent);
+        if (selectedWords.length !== requiredCount) {
+          alert(`You must select exactly ${requiredCount} words to validate the ${type}.`);
+          return;
+        }
+        const name = prompt(`Who got the ${type}?`);
+        if (name) callback(name);
+        checkPanel.innerHTML = "";
+        checkPanel.style.display = "none";
+      };
+      checkPanel.appendChild(submitBtn);
+    }
+
     function checkLine() {
-      const name = prompt("¿Quién ha hecho línea?");
-      if (name) {
-        winners.innerHTML += `<div><strong>Línea:</strong> ${name}</div>`;
+      displayCalledWords(name => {
+        winners.innerHTML += `<div><strong>Line:</strong> ${name}</div>`;
         document.getElementById("line-btn").disabled = true;
-      }
+      }, 3, "line");
     }
 
     function checkBingo() {
-      const name = prompt("¿Quién ha hecho BINGO?");
-      if (name) {
+      displayCalledWords(name => {
         winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
         document.getElementById("bingo-btn").disabled = true;
         document.getElementById("line-btn").disabled = true;
-        calledWord.innerHTML = "🎉 ¡Juego terminado!";
-      }
+        calledWord.innerHTML = "🎉 Game Over!";
+      }, 10, "bingo");
+    }
+
+    function showInstructions() {
+      alert("🎯 How to Play:\n\n1. Click START to begin the bingo.\n2. Each time you click 'Next Word', a new word will appear.\n3. Students mark the words on their physical bingo cards.\n4. When someone completes a line (3 words), click 'Line'.\n5. For a full bingo (10 words), click 'Bingo'.\n6. Words will be checked before confirming the winner.\n\nHave fun playing Travel Bingo! ✈️");
     }
   </script>
 </body>
