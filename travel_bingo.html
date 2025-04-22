@@ -6,20 +6,14 @@
   <style>
     body { font-family: sans-serif; text-align: center; background: #f0f8ff; }
     h1 { margin-top: 20px; }
-    #bingo-board { display: grid; grid-template-columns: repeat(5, 80px); justify-content: center; gap: 5px; margin: 20px auto; }
-    .cell { padding: 10px; background: white; border: 2px solid #ccc; cursor: pointer; font-size: 0.9em; }
-    .marked { background: #90ee90; font-weight: bold; }
-    #controls button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+    #bingo-board { display: none; }
     #called-word { font-size: 2em; margin: 15px; color: #333; font-weight: bold; }
-    #check-panel { margin: 20px auto; display: none; flex-wrap: wrap; justify-content: center; gap: 10px; max-width: 500px; }
-    .check-word { padding: 10px; border: 2px solid #ccc; background: #eee; cursor: pointer; border-radius: 5px; }
-    .check-word.selected { background: #90ee90; font-weight: bold; }
+    #controls button { margin: 5px; padding: 10px 15px; cursor: pointer; }
     #winners { margin-top: 20px; font-size: 1.2em; color: #444; }
   </style>
 </head>
 <body>
   <h1>🎲 Travel Bingo 🎒</h1>
-  <div id="bingo-board"></div>
   <div id="called-word"></div>
   <div id="controls">
     <button onclick="startGame()">Start</button>
@@ -28,7 +22,6 @@
     <button onclick="checkLine()" id="line-btn">✅ Line</button>
     <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
   </div>
-  <div id="check-panel"></div>
   <div id="winners"></div>
 
   <script>
@@ -45,37 +38,21 @@
     let called = [];
     let boardWords = [];
 
-    const board = document.getElementById("bingo-board");
     const calledWord = document.getElementById("called-word");
-    const checkPanel = document.getElementById("check-panel");
     const winners = document.getElementById("winners");
 
     function shuffle(array) {
       return [...array].sort(() => Math.random() - 0.5);
     }
 
-    function createBoard() {
-      board.innerHTML = "";
-      boardWords = shuffle(words).slice(0, 25);
-      boardWords.forEach(word => {
-        const div = document.createElement("div");
-        div.className = "cell";
-        div.textContent = word;
-        div.onclick = () => {
-          div.classList.toggle("marked");
-        };
-        board.appendChild(div);
-      });
-    }
-
     function startGame() {
+      boardWords = shuffle(words).slice(0, 25);
       shuffled = shuffle(boardWords);
       currentIndex = 0;
       called = [];
       document.getElementById("line-btn").disabled = false;
       document.getElementById("bingo-btn").disabled = false;
       winners.innerHTML = "";
-      createBoard();
       showNextWord();
     }
 
@@ -93,77 +70,22 @@
       startGame();
     }
 
-    function displayCalledWords(callback, requiredCount, type) {
-      checkPanel.innerHTML = "";
-      checkPanel.style.display = "flex";
-
-      called.forEach(word => {
-        const div = document.createElement("div");
-        div.className = "check-word";
-        div.textContent = word;
-        div.onclick = () => {
-          div.classList.toggle("selected");
-        };
-        checkPanel.appendChild(div);
-      });
-
-      const submitBtn = document.createElement("button");
-      submitBtn.textContent = "Confirmar";
-      submitBtn.style.margin = "20px auto";
-      submitBtn.onclick = () => {
-        const selectedWords = [...document.querySelectorAll(".check-word.selected")].map(div => div.textContent);
-        if (selectedWords.length !== requiredCount) {
-          alert(`Debes seleccionar exactamente ${requiredCount} palabras para validar ${type}.`);
-          return;
-        }
-        callback(selectedWords);
-        checkPanel.innerHTML = "";
-        checkPanel.style.display = "none";
-      };
-      checkPanel.appendChild(submitBtn);
-    }
-
     function checkLine() {
-      displayCalledWords(selected => {
-        const cells = [...document.querySelectorAll(".cell")];
-        const grid = Array.from({length: 5}, (_, r) => cells.slice(r*5, r*5+5));
-        const isLine = arr => arr.every(cell => selected.includes(cell.textContent));
-
-        for (let i = 0; i < 5; i++) {
-          if (isLine(grid[i]) || isLine(grid.map(row => row[i]))) {
-            const name = prompt("¡Línea correcta! ¿Quién la ha completado?");
-            winners.innerHTML += `<div><strong>Línea:</strong> ${name}</div>`;
-            document.getElementById("line-btn").disabled = true;
-            return;
-          }
-        }
-
-        if (isLine(grid.map((r, i) => r[i])) || isLine(grid.map((r, i) => r[4-i]))) {
-          const name = prompt("¡Línea diagonal correcta! ¿Quién la ha completado?");
-          winners.innerHTML += `<div><strong>Línea:</strong> ${name}</div>`;
-          document.getElementById("line-btn").disabled = true;
-          return;
-        }
-
-        alert("No hay línea completa con las palabras seleccionadas.");
-      }, 3, "la línea");
+      const name = prompt("¿Quién ha hecho línea?");
+      if (name) {
+        winners.innerHTML += `<div><strong>Línea:</strong> ${name}</div>`;
+        document.getElementById("line-btn").disabled = true;
+      }
     }
 
     function checkBingo() {
-      displayCalledWords(selected => {
-        const cells = [...document.querySelectorAll(".cell")];
-        const matched = selected.filter(word => boardWords.includes(word));
-
-        if (matched.length === 10) {
-          const name = prompt("¡BINGO correcto! ¿Quién lo ha completado?");
-          winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
-          document.getElementById("bingo-btn").disabled = true;
-          document.getElementById("line-btn").disabled = true;
-          calledWord.innerHTML = "🎉 ¡Juego terminado!";
-        } else {
-          alert("Debes seleccionar 10 palabras del tablero que hayan sido llamadas.");
-        }
-      }, 10, "el bingo");
+      const name = prompt("¿Quién ha hecho BINGO?");
+      if (name) {
+        winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
+        document.getElementById("bingo-btn").disabled = true;
+        document.getElementById("line-btn").disabled = true;
+        calledWord.innerHTML = "🎉 ¡Juego terminado!";
+      }
     }
   </script>
 </body>
