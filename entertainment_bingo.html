@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Minigames - Your English Teacher</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fef6e4;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      
+      min-height: 100vh;
+    }
+    h1 {
+      margin: 20px 0;
+      font-size: 2.5em;
+      color: #333;
+    }
+    #called-word {
+      font-size: 2.5em;
+      margin: 30px auto;
+      color: #222;
+      font-weight: 600;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 300px;
+    }
+    #controls {
+      margin-bottom: 20px;
+    }
+    #controls button {
+      margin: 8px;
+      padding: 12px 18px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      background-color: #58cced;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: background 0.3s ease;
+    }
+    #controls button:hover {
+      background-color: #45b3d8;
+    }
+    #check-panel {
+      margin: 20px auto;
+      display: none;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      max-width: 600px;
+    }
+    .check-word {
+      padding: 12px;
+      border: 2px solid #ccc;
+      background: #fff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, border 0.2s ease;
+    }
+    .check-word.selected {
+      background: #c8f7c5;
+      font-weight: bold;
+      border-color: #3aa655;
+    }
+    .back-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .back-buttons a {
+      text-decoration: none;
+    }
+    .back-buttons button {
+      padding: 15px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 12px;
+      background-color: #ff8a65;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .back-buttons button:hover {
+      background-color: #ff7043;
+      transform: scale(1.05);
+    }
+    .game-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .game-buttons a {
+      text-decoration: none;
+    }
+    .game-buttons button {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 12px;
+      background-color: #58cced;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .game-buttons button:hover {
+      background-color: #45b3d8;
+      transform: scale(1.05);
+    }
+    #winners {
+      margin-top: 25px;
+      font-size: 1.2em;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Minijgames - Your English Teacher</h1>
+  
+  <div class="back-buttons">
+    <a href="bingo.html"><button>🎲 Back to bingo main page</button></a>
+  </div>
+  
+  <h1>🎲 Entertainment Bingo 🎭</h1>
+  <div id="called-word"></div>
+  <div id="controls">
+    <button onclick="startGame()">🚀 Start</button>
+    <button onclick="showNextWord()">➡️ Next Word</button>
+    <button onclick="restartGame()">🔄 Restart</button>
+    <button onclick="checkLine()" id="line-btn">✅ Line</button>
+    <button onclick="checkBingo()" id="bingo-btn">🏆 Bingo</button>
+    <button onclick="showInstructions()">ℹ️ How to play</button>
+  </div>
+  <div id="check-panel"></div>
+  <div id="winners"></div>
+
+  <script>
+    const words = [
+        "documentary", "blockbuster", "screenplay", "stunt", "cliffhanger",
+        "composer", "soundtrack", "chart-topping", "chorus", "lyrics",
+        "microphone", "instrument", "live performance", "headphones", "record label",
+        "goalkeeper", "midfielder", "striker", "referee", "championship",
+        "tournament", "spectator", "athletics", "team spirit", "sportsmanship",
+        "gymnastics", "relay race", "scoreboard", "highlight", "post-match analysis",
+        "talent show", "broadcast", "reality TV", "celebrity", "entertainment",
+        "audience", "live stream"
+    ];
+
+    let currentIndex = 0;
+    let shuffled = [];
+    let called = [];
+    let boardWords = [];
+
+    const calledWord = document.getElementById("called-word");
+    const winners = document.getElementById("winners");
+    const checkPanel = document.getElementById("check-panel");
+
+    function shuffle(array) {
+      return [...array].sort(() => Math.random() - 0.5);
+    }
+
+    function startGame() {
+      boardWords = shuffle(words).slice(0, 25);
+      shuffled = shuffle(boardWords);
+      currentIndex = 0;
+      called = [];
+      document.getElementById("line-btn").disabled = false;
+      document.getElementById("bingo-btn").disabled = false;
+      winners.innerHTML = "";
+      checkPanel.innerHTML = "";
+      checkPanel.style.display = "none";
+      showNextWord();
+    }
+
+    function showNextWord() {
+      if (currentIndex < shuffled.length) {
+        const word = shuffled[currentIndex++];
+        called.push(word);
+        calledWord.textContent = word;
+      } else {
+        calledWord.innerHTML = "⏹️ Game over";
+      }
+    }
+
+    function restartGame() {
+      startGame();
+    }
+
+    function displayCalledWords(callback, requiredCount, type) {
+      checkPanel.innerHTML = "";
+      checkPanel.style.display = "flex";
+
+      called.forEach(word => {
+        const div = document.createElement("div");
+        div.className = "check-word";
+        div.textContent = word;
+        div.onclick = () => {
+          div.classList.toggle("selected");
+        };
+        checkPanel.appendChild(div);
+      });
+
+      const submitBtn = document.createElement("button");
+      submitBtn.textContent = "Confirm";
+      submitBtn.style.margin = "20px auto";
+      submitBtn.style.background = '#ff8fab';
+      submitBtn.style.color = 'white';
+      submitBtn.onclick = () => {
+        const selectedWords = [...document.querySelectorAll(".check-word.selected")].map(div => div.textContent);
+        if (selectedWords.length !== requiredCount) {
+          alert(`You must select exactly ${requiredCount} words to validate the ${type}.`);
+          return;
+        }
+        const name = prompt(`Who got the ${type}?`);
+        if (name) callback(name);
+        checkPanel.innerHTML = "";
+        checkPanel.style.display = "none";
+      };
+      checkPanel.appendChild(submitBtn);
+    }
+
+    function checkLine() {
+      displayCalledWords(name => {
+        winners.innerHTML += `<div><strong>Line:</strong> ${name}</div>`;
+        document.getElementById("line-btn").disabled = true;
+      }, 3, "line");
+    }
+
+    function checkBingo() {
+      displayCalledWords(name => {
+        winners.innerHTML += `<div><strong>BINGO:</strong> ${name}</div>`;
+        document.getElementById("bingo-btn").disabled = true;
+        document.getElementById("line-btn").disabled = true;
+        calledWord.innerHTML = "🎉 Game Over!";
+      }, 9, "bingo");
+    }
+
+    function showInstructions() {
+      alert("🎯 How to Play:\n\n1. Click START to begin the bingo.\n2. Each time you click 'Next Word', a new word will appear.\n3. Students mark the words on their physical bingo cards.\n4. When someone completes a line (3 words), click 'Line'.\n5. For a full bingo (9 words), click 'Bingo'.\n6. Words will be checked before confirming the winner.\n\nHave fun playing Travel Bingo! ✈️");
+    }
+  </script>
+</body>
+</html>
