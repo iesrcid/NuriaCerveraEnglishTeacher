@@ -68,6 +68,33 @@
       font-weight: bold;
       border-color: #3aa655;
     }
+    .game-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .game-buttons a {
+      text-decoration: none;
+    }
+    .game-buttons button {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 12px;
+      background-color: #58cced;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .game-buttons button:hover {
+      background-color: #45b3d8;
+      transform: scale(1.05);
+    }
     #winners {
       margin-top: 25px;
       font-size: 1.2em;
@@ -77,6 +104,9 @@
 </head>
 <body>
   <h1>🎮 Minijgames - Your English Teacher</h1>
+  <div class="game-buttons">
+    <a href="bingo.html"><button>🎲 Back to bingo main page</button></a>
+  </div>
   <h2>🎲 Travel Bingo 🎒</h2>
   <div id="called-word"></div>
   <div id="controls">
