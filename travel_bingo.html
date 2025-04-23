@@ -71,6 +71,32 @@
       font-weight: bold;
       border-color: #3aa655;
     }
+    .back-buttons {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 40px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .back-buttons a {
+      text-decoration: none;
+    }
+    .back-buttons button {
+      padding: 15px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 12px;
+      background-color: #ff8a65;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .back-buttons button:hover {
+      background-color: #ff7043;
+      transform: scale(1.05);
+    }
     .game-buttons {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -106,10 +132,12 @@
   </style>
 </head>
 <body>
-  <h1>🎮 Minijgames - Your English Teacher - <a href="bingo.html"><button>🎲 Back to bingo main page</button></a></h1>
-  <div class="game-buttons">
-    <a href="bingo.html"><button>🎲 Back to bingo main page</button></a>
+  <h1>🎮 Minijgames - Your English Teacher</h1>
+  
+  <div class="back-buttons">
+    <a href="index.html"><button>🎲 Back to main page</button></a>
   </div>
+  
   <h2>🎲 Travel Bingo 🎒</h2>
   <div id="called-word"></div>
   <div id="controls">
