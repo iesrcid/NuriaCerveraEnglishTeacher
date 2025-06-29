@@ -105,14 +105,15 @@
   <h1>🎮 Minigames - Your English Teacher</h1>
   
   <div class="back-buttons">
-    <a href="bingo.html"><button>🎲 Back to bingo main page</button></a>
+    <a href="index.html"><button>🎲 Back to main page</button></a>
   </div>
   
   <h1>🎲 Grammarpoly</h1>
   <div id="called-word"></div>
   <div id="controls">
-    <button onclick="iniciarCuentaAtras()">🚀 Start</button>
-    <button onclick="showInstructions()">ℹ️ How to play</button>
+    <button onclick="showInstructions1()">ℹ️ How to start</button>
+    <button onclick="showInstructions2()">ℹ️ How to play</button>
+    <button onclick="showInstructions3()">ℹ️ How to win/lose</button>
   </div>
    <div id="cuentaAtras">Cargando...</div>
   <div id="check-panel"></div>
@@ -151,9 +152,51 @@
       }, 1000);
     }
     window.onload = iniciarCuentaAtras;
+  function showInstructions1() {
+      alert("🎯 How to Start:\n\n" +
+        "• Give $10 to each player.\n" +
+        "• Place all player tokens on the Start square.\n" +
+        "• Put the question cards in a pile in the centre of the board.\n" +
+        "• Sort the grammar cards (coloured ones) face down by number and place them on the side of the board.\n" +
+        "• Each player rolls the die. The highest roll starts, followed by the next highest, and so on."
+      );
+    }
     
-    function showInstructions() {
-      alert("🎯 How to Play:\n\n1. Click START to begin the bingo.\n2. Each time you click 'Next Word', a new word will appear.\n3. Students mark the words on their physical bingo cards.\n4. When someone completes a line (3 words), click 'Line'.\n5. For a full bingo (9 words), click 'Bingo'.\n6. Words will be checked before confirming the winner.\n\nHave fun playing Travel Bingo! ✈️");
+    function showInstructions2() {
+      alert("🎯 How to Play:\n\n" +
+        "• On your turn, roll the die and move forward that number of squares.\n\n" +
+        "• If you land on a question square:\n" +
+        "  - The player to your left picks a card and reads it aloud:\n" +
+        "    - If it's a question card: answer it. If you're correct, you earn the reward shown.\n" +
+        "    - If it's a task card: follow the instructions or keep the card if allowed.\n\n" +
+        "• If you land on the X: you lose your turn.\n\n" +
+        "• If you land on a grammar square (coloured):\n" +
+        "  - You have two options: answer the card or skip your turn.\n" +
+        "  - If you choose to answer:\n" +
+        "    - The player to your left reads the card.\n" +
+        "    - If you're correct, you keep the card.\n" +
+        "    - If you're wrong, you pay the bank.\n" +
+        "    - In both cases, play passes to the next player.\n\n" +
+        "• If you land on Start: you collect $10.\n\n" +
+        "• If you land on “Go to Jail!”:\n" +
+        "  - Go directly to jail without collecting $10 from Start.\n" +
+        "  - Once in jail, you have three options:\n" +
+        "    - Use a “Get Out of Jail” card and resume playing on your next turn.\n" +
+        "    - Pay a $5 fine to the centre of the board and resume playing on your next turn.\n" +
+        "    - Stay in jail for 3 turns.\n\n" +
+        "• If you land on the Reward square: you collect all the fines in the centre of the board (jail fines)."
+      );
+    }
+    function showInstructions3() {
+      alert("🎯 How to Win/Lose:\n\n" +
+        "• Negative Balance:\n" +
+        "  - If a player reaches more than -$5, they are eliminated immediately.\n" +
+        "  - If a player has a negative balance under -$5, they have 3 turns to recover. If they fail, they are eliminated.\n\n" +
+        "• When Time Is Up – Final Scoring:\n" +
+        "  - Every $1 = 0.25 points\n" +
+        "  - Add the points from your grammar cards (colours).\n" +
+        "  - Bonus: If you have all the cards from one colour group, you receive an extra bonus."
+      );
     }
   </script>
 </body>
