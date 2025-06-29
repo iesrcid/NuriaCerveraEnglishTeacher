@@ -122,33 +122,38 @@
       // Preguntar al usuario cuántos minutos quiere
       let minutos = prompt("¿Cuántos minutos deseas para la cuenta atrás?");
       minutos = parseInt(minutos);
-  
+
       if (isNaN(minutos) || minutos <= 0) {
         document.getElementById("cuentaAtras").innerHTML = "Valor no válido.";
-      } else {
-        // Calcular fecha objetivo sumando los minutos actuales
-        const fechaObjetivo = new Date().getTime() + minutos * 60 * 1000;
-  
-        const intervalo = setInterval(function() {
-          const ahora = new Date().getTime();
-          const diferencia = fechaObjetivo - ahora;
-  
-          const m = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
-          const s = Math.floor((diferencia % (1000 * 60)) / 1000);
-  
-          document.getElementById("cuentaAtras").innerHTML = `${m}m ${s}s`;
-  
-          if (diferencia < 0) {
-            clearInterval(intervalo);
-            document.getElementById("cuentaAtras").innerHTML = "¡Tiempo terminado!";
-          }
-        }, 1000);
+        return;
       }
+
+      const fechaObjetivo = new Date().getTime() + minutos * 60 * 1000;
+      const cuentaAtras = document.getElementById("cuentaAtras");
+
+      clearInterval(window.intervaloCuentaAtras); // Evita duplicados
+
+      window.intervaloCuentaAtras = setInterval(function () {
+        const ahora = new Date().getTime();
+        const diferencia = fechaObjetivo - ahora;
+
+        if (diferencia < 0) {
+          clearInterval(window.intervaloCuentaAtras);
+          cuentaAtras.innerHTML = "¡Tiempo terminado!";
+          return;
+        }
+
+        const m = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+        const s = Math.floor((diferencia % (1000 * 60)) / 1000);
+
+        cuentaAtras.innerHTML = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      }, 1000);
     }
-    
+    window.onload = iniciarCuentaAtras;
+    /*
     function showInstructions() {
       alert("🎯 How to Play:\n\n1. Click START to begin the bingo.\n2. Each time you click 'Next Word', a new word will appear.\n3. Students mark the words on their physical bingo cards.\n4. When someone completes a line (3 words), click 'Line'.\n5. For a full bingo (9 words), click 'Bingo'.\n6. Words will be checked before confirming the winner.\n\nHave fun playing Travel Bingo! ✈️");
-    }
+    }*/
   </script>
 </body>
 </html>
