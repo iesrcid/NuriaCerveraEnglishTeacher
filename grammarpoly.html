@@ -115,18 +115,18 @@
     <button onclick="showInstructions2()">ℹ️ How to play</button>
     <button onclick="showInstructions3()">ℹ️ How to win/lose</button>
   </div>
-   <div id="cuentaAtras">Cargando...</div>
+   <div id="cuentaAtras">...</div>
   <div id="check-panel"></div>
   <div id="winners"></div>
 
   <script>
     function iniciarCuentaAtras() {
       // Preguntar al usuario cuántos minutos quiere
-      let minutos = prompt("¿Cuántos minutos deseas para la cuenta atrás?");
+      let minutos = prompt("How many minutes do you want for the countdown?");
       minutos = parseInt(minutos);
 
       if (isNaN(minutos) || minutos <= 0) {
-        document.getElementById("cuentaAtras").innerHTML = "Valor no válido.";
+        document.getElementById("cuentaAtras").innerHTML = "Fail";
         return;
       }
 
@@ -141,7 +141,7 @@
 
         if (diferencia < 0) {
           clearInterval(window.intervaloCuentaAtras);
-          cuentaAtras.innerHTML = "¡Tiempo terminado!";
+          cuentaAtras.innerHTML = "Time's up!";
           return;
         }
 
